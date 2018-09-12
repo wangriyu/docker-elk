@@ -1,0 +1,74 @@
+version: '2.2'
+
+services:
+  elasticsearch:
+    build:
+      context: elasticsearch/
+    container_name: elasticsearch
+    volumes:
+      - /data/elasticsearch/data:/usr/share/elasticsearch/data ## es 数据
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    cpus: 1.5 # 限制 cpu 使用率，比如两核的 cpu 设置 1.5 代表最多占用 1.5/2 即 75% 的 cpu，需要 docker-compose 1.16+ 才支持
+    mem_limit: 6g # 限制内存最高占用
+    environment:
+      ES_JAVA_OPTS: "-Xmx3g -Xms3g" # java 堆内存大小
+    restart: always
+    network_mode: "host"
+
+  logstash:
+    build:
+      context: logstash/
+    container_name: logstash
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5000:5000"
+    cpus: 1.5
+    mem_limit: 1g
+    environment:
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    restart: always
+    network_mode: "host"
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build:
+      context: kibana/
+    container_name: kibana
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config:ro
+    ports:
+      - "5601:5601"
+    restart: always
+    network_mode: "host"
+    depends_on:
+      - elasticsearch
+
+  cerebro:
+    image: yannart/cerebro
+    container_name: cerebro
+    restart: always
+    ports:
+      - "9000:9000"
+    network_mode: "host"
+    depends_on:
+      - elasticsearch
+
+  curator:
+    build:
+      context: extensions/curator/
+    container_name: curator
+    environment:
+      ELASTICSEARCH_HOST: elasticsearch
+      CRON: "30 0 * * *" # 每天 0 点 30 分清理 ${UNIT_COUNT} 天之前的索引
+      CONFIG_FILE: /usr/share/curator/config/curator.yml
+      COMMAND: /usr/share/curator/config/delete_log_files_curator.yml
+      UNIT_COUNT: 7
+    network_mode: "host"
+    depends_on:
+      - elasticsearch
