@@ -12,4 +12,5 @@ localhost:5601 -> kibana 界面
 修改配置:
 
 logstash: logstash/pipeline/logstash.conf
+
 elasticsearch: elasticsearch/conf/elasticsearch.yml
