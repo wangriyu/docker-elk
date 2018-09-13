@@ -19,6 +19,8 @@ services:
         hard: -1
     environment:
       ES_JAVA_OPTS: "-Xmx3g -Xms3g" # java 堆内存大小
+      PUBLISH_HOST: "10.0.X.A" # host ip
+      NODE_NAME: "es-node-1"
     restart: always
     network_mode: "host"
 
