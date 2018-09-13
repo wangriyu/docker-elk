@@ -1,31 +1,24 @@
----
-## https://www.elastic.co/guide/en/elasticsearch/reference/6.3/index.html
-cluster.name: "elk-cluster" # 集群名字要统一
-node.name: "es-node-1" # 节点名字
-
-## https://www.elastic.co/guide/en/elasticsearch/reference/6.3/modules-node.html
-node.master: true # 可以参加选举，主节点负责索引、控制集群
-node.data: true # 数据节点只负责数据的增删改查、搜索聚合
-node.injest: true # 可以预处理索引
-
+## Default Elasticsearch configuration from elasticsearch-docker.
+## from https://github.com/elastic/elasticsearch-docker/blob/master/build/elasticsearch/elasticsearch.yml
+cluster.name: "elk-cluster"
+node.name: "es-node-3"
+node.master: true
 network.host: 0.0.0.0
-network.publish_host: 10.42.X.X # 设置 host ip
+
+network.publish_host: 10.42.X.A
 
 ## https://www.elastic.co/guide/en/elasticsearch/reference/6.3/setup-configuration-memory.html
-## 锁住内存，最好按文档所说的关闭内存交换，不过我尝试发现总是失败
-# bootstrap.memory_lock: true
+bootstrap.memory_lock: true
 
 discovery.zen.ping.unicast.hosts: ["10.42.X.A:9300", "10.42.X.B:9300", "10.42.X.C:9300"]
 discovery.zen.fd.ping_timeout: 120s
 discovery.zen.fd.ping_retries: 6
 discovery.zen.fd.ping_interval: 30s
 
-## minimum_master_nodes need to be explicitly set when bound on a public IP
-## set to 1 to allow single node clusters
-## https://www.elastic.co/guide/en/elasticsearch/reference/6.3/modules-node.html#split-brain
-## 推荐设置为预选主节点数量除二加一: (masters) / 2 + 1，可以有效防止脑裂
-discovery.zen.minimum_master_nodes: 2
+indices.fielddata.cache.size: 30%
 
-## Use single node discovery in order to disable production mode and avoid bootstrap checks
-## see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
-# discovery.type: zen
+# minimum_master_nodes need to be explicitly set when bound on a public IP
+# set to 1 to allow single node clusters
+# Details: https://github.com/elastic/elasticsearch/pull/17288
+# recommend set: (masters) / 2 + 1
+discovery.zen.minimum_master_nodes: 2

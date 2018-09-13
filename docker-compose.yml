@@ -13,6 +13,10 @@ services:
       - "9300:9300"
     cpus: 1.5 # 限制 cpu 使用率，比如两核的 cpu 设置 1.5 代表最多占用 1.5/2 即 75% 的 cpu，需要 docker-compose 1.16+ 才支持
     mem_limit: 6g # 限制内存最高占用
+    ulimits: # 必须开启此项 bootstrap.memory_lock: true 才能生效
+      memlock:
+        soft: -1
+        hard: -1
     environment:
       ES_JAVA_OPTS: "-Xmx3g -Xms3g" # java 堆内存大小
     restart: always
