@@ -5,3 +5,16 @@ server.name: kibana
 server.host: "0"
 elasticsearch.url: http://localhost:9200
 elasticsearch.requestTimeout: 90000
+
+sentinl:
+  settings:
+    email:
+      active: true
+      user: account@mail.com
+      password: XXXXXX
+      host: smtp.exmail.qq.com
+      ssl: false
+      timeout: 10000
+    report:
+      active: false
+#      tmp_path: /tmp/

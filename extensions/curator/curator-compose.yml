@@ -1,16 +1,17 @@
-version: '2'
+version: '2.2'
 
 services:
   curator:
     build:
       context: extensions/curator/
+    container_name: curator
     environment:
-      ELASTICSEARCH_HOST: elasticsearch
-      CRON: 0 0 * * *
+      ELASTICSEARCH_HOST: $ELK_HOST
+      CRON: "30 0 * * *" # 每天 0 点 30 分清理 ${UNIT_COUNT} 天之前的索引
       CONFIG_FILE: /usr/share/curator/config/curator.yml
       COMMAND: /usr/share/curator/config/delete_log_files_curator.yml
-      UNIT_COUNT: 2
-    networks:
-      - elk
+      UNIT_COUNT: 10
+    network_mode: "host"
+    restart: always
     depends_on:
       - elasticsearch

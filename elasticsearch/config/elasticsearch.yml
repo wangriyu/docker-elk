@@ -1,6 +1,6 @@
 ## Default Elasticsearch configuration from elasticsearch-docker.
 ## from https://github.com/elastic/elasticsearch-docker/blob/master/build/elasticsearch/elasticsearch.yml
-cluster.name: "elk-cluster"
+cluster.name: ${CLUSTER_NAME}
 node.name: ${NODE_NAME}
 node.master: true
 network.host: 0.0.0.0
@@ -10,17 +10,17 @@ network.publish_host: ${PUBLISH_HOST}
 ## https://www.elastic.co/guide/en/elasticsearch/reference/6.3/setup-configuration-memory.html
 bootstrap.memory_lock: true
 
-discovery.zen.ping.unicast.hosts: ["10.42.X.A:9300", "10.42.X.B:9300", "10.42.X.C:9300"]
+discovery.zen.ping.unicast.hosts: ["localhost"]
 discovery.zen.fd.ping_timeout: 120s
 discovery.zen.fd.ping_retries: 6
 discovery.zen.fd.ping_interval: 30s
 
 indices.fielddata.cache.size: 30%
 
-gateway.recover_after_nodes: 2
-gateway.expected_nodes: 3
-gateway.recover_after_time: 5m
+# gateway.recover_after_nodes: 1
+# gateway.expected_nodes: 2
+# gateway.recover_after_time: 5m
 
 # 防止脑裂，推荐设成: 候选主节点数除二加一
 # recommend set: (masters) / 2 + 1
-discovery.zen.minimum_master_nodes: 2
+discovery.zen.minimum_master_nodes: 1
